@@ -26,11 +26,15 @@ export class SaveTodoCommandHandler {
   }
 
   async handle(command: SaveTodoCommand): Promise<CommandStatus> {
-    let state = await this.#todoRepository.findById(command.data.id);
-    state = saveTodo(state, command);
-    await this.#todoRepository.save(state);
-    const event = createTodoSaved(state);
-    this.#eventBus.publish(event);
-    return createCommandStatus();
+    try {
+      let state = await this.#todoRepository.findById(command.data.id);
+      state = saveTodo(state, command);
+      await this.#todoRepository.save(state);
+      const event = createTodoSaved(state);
+      this.#eventBus.publish(event);
+      return createCommandStatus();
+    } catch (error) {
+      return createCommandStatus((error as Error).message);
+    }
   }
 }

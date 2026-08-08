@@ -47,9 +47,9 @@ describe("Add todo", () => {
     const { handler, eventBus, todoRepository } = configure();
 
     const command = createAddTodo({ title: "" });
-    const action = () => handler.handle(command);
+    const status = await handler.handle(command);
 
-    expect(action).rejects.toThrow("title-must-not-be-empty");
+    expect(status).toEqual(createCommandStatus("title-must-not-be-empty"));
     expect(eventBus.getEvents()).toEqual([]);
     const todos = await todoRepository.findAll();
     expect(todos).toEqual([]);
@@ -59,9 +59,9 @@ describe("Add todo", () => {
     const { handler, eventBus, todoRepository } = configure();
 
     const command = createAddTodo({ title: "   " });
-    const action = () => handler.handle(command);
+    const status = await handler.handle(command);
 
-    expect(action).rejects.toThrow("title-must-not-be-empty");
+    expect(status).toEqual(createCommandStatus("title-must-not-be-empty"));
     expect(eventBus.getEvents()).toEqual([]);
     const todos = await todoRepository.findAll();
     expect(todos).toEqual([]);
@@ -72,9 +72,9 @@ describe("Add todo", () => {
     await todoRepository.saveAll([todo1]);
 
     const command = createAddTodo({ title: "foo" });
-    const action = () => handler.handle(command);
+    const status = await handler.handle(command);
 
-    expect(action).rejects.toThrow("title-must-be-unique");
+    expect(status).toEqual(createCommandStatus("title-must-be-unique"));
     expect(eventBus.getEvents()).toEqual([]);
     const todos = await todoRepository.findAll();
     expect(todos).toEqual([todo1]);

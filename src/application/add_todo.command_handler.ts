@@ -26,12 +26,17 @@ export class AddTodoCommandHandler {
   }
 
   async handle(command: AddTodoCommand): Promise<CommandStatus> {
-    const todos = await this.#todoRepository.findAll();
-    let state = todos.find((todo) => todo.title === command.data.title) || null;
-    const data = addTodo(state, command);
-    state = await this.#todoRepository.save(data);
-    const event = createTodoAdded(state);
-    this.#eventBus.publish(event);
-    return createCommandStatus();
+    try {
+      const todos = await this.#todoRepository.findAll();
+      let state =
+        todos.find((todo) => todo.title === command.data.title) || null;
+      const data = addTodo(state, command);
+      state = await this.#todoRepository.save(data);
+      const event = createTodoAdded(state);
+      this.#eventBus.publish(event);
+      return createCommandStatus();
+    } catch (error) {
+      return createCommandStatus((error as Error).message);
+    }
   }
 }

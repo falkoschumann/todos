@@ -38,9 +38,9 @@ describe("Toggle todo", () => {
     await todoRepository.saveAll([todo1]);
 
     const command = createToggleTodo({ id: 2 });
-    const action = () => handler.handle(command);
+    const status = await handler.handle(command);
 
-    expect(action).rejects.toThrow("todo-must-exist");
+    expect(status).toEqual(createCommandStatus("todo-must-exist"));
     expect(eventBus.getEvents()).toEqual([]);
     const todos = await todoRepository.findAll();
     expect(todos).toEqual([todo1]);

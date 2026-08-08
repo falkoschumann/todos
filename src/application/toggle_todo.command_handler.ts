@@ -29,11 +29,15 @@ export class ToggleTodoCommandHandler {
   }
 
   async handle(command: ToggleTodoCommand): Promise<CommandStatus> {
-    let state = await this.#todoRepository.findById(command.data.id);
-    state = toggleTodo(state, command);
-    await this.#todoRepository.save(state);
-    const event = createTodoToggled(state);
-    this.#eventBus.publish(event);
-    return createCommandStatus();
+    try {
+      let state = await this.#todoRepository.findById(command.data.id);
+      state = toggleTodo(state, command);
+      await this.#todoRepository.save(state);
+      const event = createTodoToggled(state);
+      this.#eventBus.publish(event);
+      return createCommandStatus();
+    } catch (error) {
+      return createCommandStatus((error as Error).message);
+    }
   }
 }

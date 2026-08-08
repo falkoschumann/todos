@@ -38,9 +38,9 @@ describe("Save todo", () => {
     await todoRepository.saveAll([todo1]);
 
     const command = createSaveTodo({ id: 1, title: "" });
-    const action = () => handler.handle(command);
+    const status = await handler.handle(command);
 
-    expect(action).rejects.toThrow("title-must-not-be-empty");
+    expect(status).toEqual(createCommandStatus("title-must-not-be-empty"));
     expect(eventBus.getEvents()).toEqual([]);
     const todos = await todoRepository.findAll();
     expect(todos).toEqual([todo1]);
@@ -51,9 +51,9 @@ describe("Save todo", () => {
     await todoRepository.saveAll([todo1]);
 
     const command = createSaveTodo({ id: 1, title: "   " });
-    const action = () => handler.handle(command);
+    const status = await handler.handle(command);
 
-    expect(action).rejects.toThrow("title-must-not-be-empty");
+    expect(status).toEqual(createCommandStatus("title-must-not-be-empty"));
     expect(eventBus.getEvents()).toEqual([]);
     const todos = await todoRepository.findAll();
     expect(todos).toEqual([todo1]);
@@ -64,9 +64,9 @@ describe("Save todo", () => {
     await todoRepository.saveAll([{ ...todo1 }]);
 
     const command = createSaveTodo({ id: 2, title: "lorem ipsum" });
-    const action = () => handler.handle(command);
+    const status = await handler.handle(command);
 
-    expect(action).rejects.toThrow("todo-must-exist");
+    expect(status).toEqual(createCommandStatus("todo-must-exist"));
     expect(eventBus.getEvents()).toEqual([]);
     const todos = await todoRepository.findAll();
     expect(todos).toEqual([todo1]);
