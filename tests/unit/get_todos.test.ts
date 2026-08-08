@@ -3,140 +3,66 @@
 import { beforeEach, describe, expect, it } from "vitest";
 
 import { GetTodosQueryHandler } from "../../src/application/get_todos.query_handler";
-import { createTodo } from "../../src/domain/todo.aggregate";
+import type { TodoState } from "../../src/domain/todo.aggregate";
 import {
   createGetTodosQuery,
   createGetTodosQueryResult,
 } from "../../src/domain/get_todos.query";
 import { TodoRepository } from "../../src/infrastructure/todo.repository";
 
+const todo1: TodoState = { id: 1, title: "foo", completed: false };
+const todo2: TodoState = { id: 2, title: "bar", completed: false };
+const todo3: TodoState = { id: 3, title: "baz", completed: true };
+
 describe("Get todos", () => {
   beforeEach(() => {
-    const repository = TodoRepository.create();
-    repository.clear();
+    localStorage.clear();
   });
 
   it("should show all todos", async () => {
     const { handler, todoRepository } = configure();
-    await todoRepository.store([
-      createTodo({
-        id: 1,
-        title: "a",
-        completed: true,
-      }),
-      createTodo({
-        id: 2,
-        title: "b",
-        completed: true,
-      }),
-      createTodo({
-        id: 3,
-        title: "c",
-      }),
-    ]);
+    await todoRepository.saveAll([todo1, todo2, todo3]);
 
     const query = createGetTodosQuery({ showing: "all" });
     const result = await handler.handle(query);
 
     expect(result).toEqual(
       createGetTodosQueryResult({
-        todos: [
-          createTodo({
-            id: 1,
-            title: "a",
-            completed: true,
-          }),
-          createTodo({
-            id: 2,
-            title: "b",
-            completed: true,
-          }),
-          createTodo({
-            id: 3,
-            title: "c",
-          }),
-        ],
-        activeTodoCount: 1,
-        completedCount: 2,
+        todos: [todo1, todo2, todo3],
+        activeTodoCount: 2,
+        completedCount: 1,
       }),
     );
   });
 
   it("should show active todos", async () => {
     const { handler, todoRepository } = configure();
-    await todoRepository.store([
-      createTodo({
-        id: 1,
-        title: "a",
-        completed: true,
-      }),
-      createTodo({
-        id: 2,
-        title: "b",
-        completed: true,
-      }),
-      createTodo({
-        id: 3,
-        title: "c",
-      }),
-    ]);
+    await todoRepository.saveAll([todo1, todo2, todo3]);
 
     const query = createGetTodosQuery({ showing: "active" });
     const result = await handler.handle(query);
 
     expect(result).toEqual(
       createGetTodosQueryResult({
-        todos: [
-          {
-            id: 3,
-            title: "c",
-            completed: false,
-          },
-        ],
-        activeTodoCount: 1,
-        completedCount: 2,
+        todos: [todo1, todo2],
+        activeTodoCount: 2,
+        completedCount: 1,
       }),
     );
   });
 
   it("should show completed todos", async () => {
     const { handler, todoRepository } = configure();
-    await todoRepository.store([
-      createTodo({
-        id: 1,
-        title: "a",
-        completed: true,
-      }),
-      createTodo({
-        id: 2,
-        title: "b",
-        completed: true,
-      }),
-      createTodo({
-        id: 3,
-        title: "c",
-      }),
-    ]);
+    await todoRepository.saveAll([todo1, todo2, todo3]);
 
     const query = createGetTodosQuery({ showing: "completed" });
     const result = await handler.handle(query);
 
     expect(result).toEqual(
       createGetTodosQueryResult({
-        todos: [
-          {
-            id: 1,
-            title: "a",
-            completed: true,
-          },
-          {
-            id: 2,
-            title: "b",
-            completed: true,
-          },
-        ],
-        activeTodoCount: 1,
-        completedCount: 2,
+        todos: [todo3],
+        activeTodoCount: 2,
+        completedCount: 1,
       }),
     );
   });

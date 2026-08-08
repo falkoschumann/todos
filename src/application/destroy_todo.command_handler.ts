@@ -4,6 +4,7 @@ import {
   destroyTodo,
   type DestroyTodoCommand,
 } from "../domain/destroy_todo.command";
+import { createTodoDestroyed } from "../domain/todo_destroyed.event";
 import type { TodoRepository } from "../infrastructure/todo.repository";
 import type { EventBus } from "../shared/event_bus";
 import { createCommandStatus, type CommandStatus } from "../shared/message";
@@ -28,11 +29,11 @@ export class DestroyTodoCommandHandler {
   }
 
   async handle(command: DestroyTodoCommand): Promise<CommandStatus> {
-    let todos = await this.#todoRepository.load();
-    const events = destroyTodo(todos, command);
-    for (const event of events) {
-      todos = todos.filter((todo) => todo.id !== event.data.id);
-      await this.#todoRepository.store(todos);
+    let state = await this.#todoRepository.findById(command.data.id);
+    state = destroyTodo(state, command);
+    if (state != null) {
+      await this.#todoRepository.delete(state);
+      const event = createTodoDestroyed(state);
       this.#eventBus.publish(event);
     }
     return createCommandStatus();

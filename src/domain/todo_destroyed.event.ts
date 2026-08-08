@@ -1,19 +1,16 @@
 // Copyright (c) 2026 Falko Schumann. All rights reserved. MIT license.
 
-export interface TodoDestroyedEvent {
-  readonly type: "todo-destroyed";
-  readonly data: TodoDestroyedEventData;
-}
+export type TodoDestroyedEvent = Readonly<{
+  type: "todo-destroyed";
+  data: TodoDestroyedEventData;
+}>;
 
 export type TodoDestroyedEventData = Readonly<{
-  readonly id: number;
+  id: number;
 }>;
 
 export function createTodoDestroyed(
   data: TodoDestroyedEventData,
 ): TodoDestroyedEvent {
-  return {
-    type: "todo-destroyed",
-    data,
-  };
+  return { type: "todo-destroyed", data };
 }

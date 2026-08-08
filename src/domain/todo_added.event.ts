@@ -1,19 +1,12 @@
 // Copyright (c) 2026 Falko Schumann. All rights reserved. MIT license.
 
-export interface TodoAddedEvent {
-  readonly type: "todo-added";
-  readonly data: TodoAddedEventData;
-}
+import type { TodoState } from "./todo.aggregate";
 
-export type TodoAddedEventData = Readonly<{
-  readonly id: number;
-  readonly title: string;
-  readonly completed: boolean;
+export type TodoAddedEvent = Readonly<{
+  type: "todo-added";
+  data: TodoState;
 }>;
 
-export function createTodoAdded(data: TodoAddedEventData): TodoAddedEvent {
-  return {
-    type: "todo-added",
-    data,
-  };
+export function createTodoAdded(data: TodoState): TodoAddedEvent {
+  return { type: "todo-added", data };
 }

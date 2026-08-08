@@ -13,18 +13,6 @@ export type TodoState = Readonly<{
   completed: boolean;
 }>;
 
-export function createTodo({
-  id,
-  title,
-  completed = false,
-}: {
-  id: number;
-  title: string;
-  completed?: boolean;
-}): TodoState {
-  return { id, title, completed };
-}
-
 export type TodoEvent =
   | AllToggledEvent
   | CompletedClearedEvent

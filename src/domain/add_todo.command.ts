@@ -1,39 +1,32 @@
 // Copyright (c) 2026 Falko Schumann. All rights reserved. MIT license.
 
-import type { TodoState } from "./todo.aggregate";
-import { createTodoAdded, type TodoAddedEvent } from "./todo_added.event";
+import { type TodoState } from "./todo.aggregate";
 
-export interface AddTodoCommand {
-  readonly type: "add-todo";
-  readonly data: AddTodoCommandData;
-}
+export type AddTodoCommand = Readonly<{
+  type: "add-todo";
+  data: AddTodoCommandData;
+}>;
 
 export type AddTodoCommandData = Readonly<{
-  readonly title: string;
+  title: string;
 }>;
 
 export function createAddTodo(data: AddTodoCommandData): AddTodoCommand {
-  return {
-    type: "add-todo",
-    data,
-  };
+  return { type: "add-todo", data };
 }
 
 export function addTodo(
-  state: TodoState[],
+  state: TodoState | null,
   command: AddTodoCommand,
-): TodoAddedEvent[] {
-  if (command.data.title.trim() === "") {
+): Omit<TodoState, "id"> {
+  if (state != null) {
+    throw new TypeError("title-must-be-unique");
+  }
+
+  const title = command.data.title.trim();
+  if (title === "") {
     throw new TypeError("title-must-not-be-empty");
   }
 
-  const lastId = state
-    .map((todo) => todo.id)
-    .reduce((max, id) => Math.max(max, id), 0);
-  const event = createTodoAdded({
-    id: lastId + 1,
-    title: command.data.title,
-    completed: false,
-  });
-  return [event];
+  return { title, completed: false };
 }

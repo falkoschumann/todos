@@ -1,5 +1,6 @@
 // Copyright (c) 2026 Falko Schumann. All rights reserved. MIT license.
 
+import { createAllToggled } from "../domain/all_toggled.event";
 import { toggleAll, type ToggleAllCommand } from "../domain/toggle_all.command";
 import type { TodoRepository } from "../infrastructure/todo.repository";
 import type { EventBus } from "../shared/event_bus";
@@ -25,13 +26,11 @@ export class ToggleAllCommandHandler {
   }
 
   async handle(command: ToggleAllCommand): Promise<CommandStatus> {
-    let todos = await this.#todoRepository.load();
-    const events = toggleAll(todos, command);
-    for (const event of events) {
-      todos = todos.map((todo) => ({ ...todo, completed: event.data.checked }));
-      await this.#todoRepository.store(todos);
-      this.#eventBus.publish(event);
-    }
+    let state = await this.#todoRepository.findAll();
+    state = toggleAll(state, command);
+    await this.#todoRepository.saveAll(state);
+    const event = createAllToggled(state);
+    this.#eventBus.publish(event);
     return createCommandStatus();
   }
 }

@@ -1,19 +1,14 @@
 // Copyright (c) 2026 Falko Schumann. All rights reserved. MIT license.
 
-export interface CompletedClearedEvent {
-  readonly type: "clear-completed";
-  readonly data: CompletedClearedEventData;
-}
+import type { TodoState } from "./todo.aggregate";
 
-export type CompletedClearedEventData = Readonly<{
-  readonly ids: number[];
+export type CompletedClearedEvent = Readonly<{
+  type: "clear-completed";
+  data: TodoState[];
 }>;
 
 export function createCompletedCleared(
-  data: CompletedClearedEventData,
+  data: TodoState[],
 ): CompletedClearedEvent {
-  return {
-    type: "clear-completed",
-    data,
-  };
+  return { type: "clear-completed", data };
 }

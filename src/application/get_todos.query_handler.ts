@@ -19,7 +19,7 @@ export class GetTodosQueryHandler {
   }
 
   async handle(query: GetTodosQuery) {
-    const todos = await this.#todoRepository.load();
+    const todos = await this.#todoRepository.findAll();
     return getTodos(todos, query);
   }
 }

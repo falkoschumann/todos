@@ -1,6 +1,7 @@
 // Copyright (c) 2026 Falko Schumann. All rights reserved. MIT license.
 
 import { addTodo, type AddTodoCommand } from "../domain/add_todo.command";
+import { createTodoAdded } from "../domain/todo_added.event";
 import type { TodoRepository } from "../infrastructure/todo.repository";
 import type { EventBus } from "../shared/event_bus";
 import { createCommandStatus, type CommandStatus } from "../shared/message";
@@ -25,13 +26,12 @@ export class AddTodoCommandHandler {
   }
 
   async handle(command: AddTodoCommand): Promise<CommandStatus> {
-    let todos = await this.#todoRepository.load();
-    const events = addTodo(todos, command);
-    for (const event of events) {
-      todos = [...todos, event.data];
-      await this.#todoRepository.store(todos);
-      this.#eventBus.publish(event);
-    }
+    const todos = await this.#todoRepository.findAll();
+    let state = todos.find((todo) => todo.title === command.data.title) || null;
+    const data = addTodo(state, command);
+    state = await this.#todoRepository.save(data);
+    const event = createTodoAdded(state);
+    this.#eventBus.publish(event);
     return createCommandStatus();
   }
 }

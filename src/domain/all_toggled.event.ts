@@ -1,17 +1,12 @@
 // Copyright (c) 2026 Falko Schumann. All rights reserved. MIT license.
 
-export interface AllToggledEvent {
-  readonly type: "all-toggled";
-  readonly data: AllToggledEventData;
-}
+import type { TodoState } from "./todo.aggregate";
 
-export type AllToggledEventData = Readonly<{
-  readonly checked: boolean;
+export type AllToggledEvent = Readonly<{
+  type: "all-toggled";
+  data: TodoState[];
 }>;
 
-export function createAllToggled(data: AllToggledEventData): AllToggledEvent {
-  return {
-    type: "all-toggled",
-    data,
-  };
+export function createAllToggled(data: TodoState[]): AllToggledEvent {
+  return { type: "all-toggled", data };
 }

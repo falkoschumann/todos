@@ -2,10 +2,10 @@
 
 import type { TodoState } from "./todo.aggregate.ts";
 
-export interface GetTodosQuery {
-  readonly type: "get-todos";
-  readonly data: GetTodosQueryData;
-}
+export type GetTodosQuery = Readonly<{
+  type: "get-todos";
+  data: GetTodosQueryData;
+}>;
 
 export type GetTodosQueryData = Readonly<{
   showing: "all" | "active" | "completed";
@@ -18,11 +18,11 @@ export function createGetTodosQuery(data: GetTodosQueryData): GetTodosQuery {
   };
 }
 
-export interface GetTodosQueryResult {
-  readonly todos: TodoState[];
-  readonly activeTodoCount: number;
-  readonly completedCount: number;
-}
+export type GetTodosQueryResult = Readonly<{
+  todos: TodoState[];
+  activeTodoCount: number;
+  completedCount: number;
+}>;
 
 export function createGetTodosQueryResult({
   todos = [],
