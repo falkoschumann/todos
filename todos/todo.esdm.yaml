@@ -23,6 +23,8 @@ state:
 invariants:
   - name: title-must-not-be-empty
     rule: A todo title must not be empty or whitespace-only.
+  - name: title-must-be-unique
+    rule: A todo title must be unique.
   - name: todo-must-exist
     rule: Commands that reference a todo id require that the todo already exists.
 ---
@@ -101,6 +103,9 @@ publishes:
   - destroyed
 actors:
   - user
+constraints:
+  - name: idempotency
+    rule: If the todo does not exist, no event is published and the command is successful.
 ---
 apiVersion: schema.esdm.io/core/v1
 kind: command
