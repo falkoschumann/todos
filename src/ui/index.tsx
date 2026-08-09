@@ -93,27 +93,31 @@ function App() {
         </ul>
       </main>
       <footer className="sticky-bottom py-2 bg-body">
-        <nav className="navbar">
-          <div className="container">
-            <div>
+        <div className="container">
+          <div className="row">
+            <div className="col text-start">
               {result.activeTodoCount} item{result.activeTodoCount !== 1 ? "s" : ""} left
             </div>
-            <div className="btn-group">
-              <a href="#" className="btn btn-outline-primary active" aria-current="page">
-                All
-              </a>
-              <a href="#" className="btn btn-outline-primary">
-                Active
-              </a>
-              <a href="#" className="btn btn-outline-primary">
-                Completed
-              </a>
+            <div className="col text-center">
+              <div className="btn-group">
+                <a href="#" className="btn btn-outline-primary active" aria-current="page">
+                  All
+                </a>
+                <a href="#" className="btn btn-outline-primary">
+                  Active
+                </a>
+                <a href="#" className="btn btn-outline-primary">
+                  Completed
+                </a>
+              </div>
             </div>
-            <button type="button" className="btn btn-primary" onClick={handleClearCompleted}>
-              Clear completed
-            </button>
+            <div className="col text-end">
+              <button type="button" className="btn btn-primary" onClick={handleClearCompleted}>
+                Clear completed
+              </button>
+            </div>
           </div>
-        </nav>
+        </div>
       </footer>
     </div>
   );
