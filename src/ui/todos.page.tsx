@@ -7,6 +7,7 @@ import { createAddTodoCommand } from "../domain/add_todo.command";
 import { createClearCompletedCommand } from "../domain/clear_completed.command";
 import { createDestroyTodoCommand } from "../domain/destroy_todo.command";
 import { createGetTodosQueryResult, createGetTodosQuery, type GetTodosQueryResult } from "../domain/get_todos.query";
+import { createSaveTodoCommand } from "../domain/save_todo.command";
 import { createToggleAllCommand } from "../domain/toggle_all.command";
 import { createToggleTodoCommand } from "../domain/toggle_todo.command";
 import FilterComponent from "./filter.component";
@@ -44,6 +45,11 @@ function TodosPage() {
     refresh();
   };
 
+  const handleSaveTodo = async (id: number, title: string) => {
+    await window.todos.routeMessage(createSaveTodoCommand({ id, title }));
+    refresh();
+  };
+
   const handleDestroyTodo = async (id: number) => {
     await window.todos.routeMessage(createDestroyTodoCommand({ id }));
     refresh();
@@ -66,7 +72,12 @@ function TodosPage() {
         />
       </header>
       <main>
-        <TodoListComponent todos={result.todos} onToggleTodo={handleToggleTodo} onDestroyTodo={handleDestroyTodo} />
+        <TodoListComponent
+          todos={result.todos}
+          onToggleTodo={handleToggleTodo}
+          onSaveTodo={handleSaveTodo}
+          onDestroyTodo={handleDestroyTodo}
+        />
       </main>
       <footer className="sticky-bottom py-2 bg-body">
         <FilterComponent activeTodoCount={result.activeTodoCount} onClearCompleted={handleClearCompleted} />
