@@ -7,6 +7,6 @@ export type TodoToggledEvent = Readonly<{
   data: TodoState;
 }>;
 
-export function createTodoToggled(data: TodoState): TodoToggledEvent {
+export function createTodoToggledEvent(data: TodoState): TodoToggledEvent {
   return { type: "todo-toggled", data };
 }

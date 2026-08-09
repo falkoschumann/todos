@@ -4,8 +4,8 @@ import { beforeEach, describe, expect, it } from "vitest";
 
 import { DestroyTodoCommandHandler } from "../../src/application/destroy_todo.command_handler";
 import type { TodoState } from "../../src/domain/todo.aggregate";
-import { createDestroyTodo } from "../../src/domain/destroy_todo.command";
-import { createTodoDestroyed } from "../../src/domain/todo_destroyed.event";
+import { createDestroyTodoCommand } from "../../src/domain/destroy_todo.command";
+import { createTodoDestroyedEvent } from "../../src/domain/todo_destroyed.event";
 import { TodoRepository } from "../../src/infrastructure/todo.repository";
 import { EventBus } from "../../src/shared/event_bus";
 import { createCommandStatus } from "../../src/shared/message";
@@ -22,11 +22,11 @@ describe("Destroy todo", () => {
     const { handler, eventBus, todoRepository } = configure();
     await todoRepository.saveAll([todo1, todo2]);
 
-    const command = createDestroyTodo({ id: 2 });
+    const command = createDestroyTodoCommand({ id: 2 });
     const status = await handler.handle(command);
 
     expect(status).toEqual(createCommandStatus());
-    expect(eventBus.getEvents()).toEqual([createTodoDestroyed(todo2)]);
+    expect(eventBus.getEvents()).toEqual([createTodoDestroyedEvent(todo2)]);
     const todos = await todoRepository.findAll();
     expect(todos).toEqual([todo1]);
   });
@@ -35,7 +35,7 @@ describe("Destroy todo", () => {
     const { handler, eventBus, todoRepository } = configure();
     await todoRepository.saveAll([todo1, todo2]);
 
-    const command = createDestroyTodo({ id: 3 });
+    const command = createDestroyTodoCommand({ id: 3 });
     const status = await handler.handle(command);
 
     expect(status).toEqual(createCommandStatus());

@@ -4,8 +4,8 @@ import { beforeEach, describe, expect, it } from "vitest";
 
 import { ToggleTodoCommandHandler } from "../../src/application/toggle_todo.command_handler";
 import type { TodoState } from "../../src/domain/todo.aggregate";
-import { createToggleTodo } from "../../src/domain/toggle_todo.command";
-import { createTodoToggled } from "../../src/domain/todo_toggled.event";
+import { createToggleTodoCommand } from "../../src/domain/toggle_todo.command";
+import { createTodoToggledEvent } from "../../src/domain/todo_toggled.event";
 import { TodoRepository } from "../../src/infrastructure/todo.repository";
 import { EventBus } from "../../src/shared/event_bus";
 import { createCommandStatus } from "../../src/shared/message";
@@ -22,12 +22,12 @@ describe("Toggle todo", () => {
     const { handler, eventBus, todoRepository } = configure();
     await todoRepository.saveAll([todo1, todo2]);
 
-    const command = createToggleTodo({ id: 1 });
+    const command = createToggleTodoCommand({ id: 1 });
     const status = await handler.handle(command);
 
     expect(status).toEqual(createCommandStatus());
     expect(eventBus.getEvents()).toEqual([
-      createTodoToggled({ id: 1, title: "foo", completed: true }),
+      createTodoToggledEvent({ id: 1, title: "foo", completed: true }),
     ]);
     const todos = await todoRepository.findAll();
     expect(todos).toEqual([{ ...todo1, completed: true }, todo2]);
@@ -37,7 +37,7 @@ describe("Toggle todo", () => {
     const { handler, eventBus, todoRepository } = configure();
     await todoRepository.saveAll([todo1]);
 
-    const command = createToggleTodo({ id: 2 });
+    const command = createToggleTodoCommand({ id: 2 });
     const status = await handler.handle(command);
 
     expect(status).toEqual(createCommandStatus("todo-must-exist"));

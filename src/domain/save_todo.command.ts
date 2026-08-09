@@ -12,7 +12,9 @@ export type SaveTodoCommandData = Readonly<{
   title: string;
 }>;
 
-export function createSaveTodo(data: SaveTodoCommandData): SaveTodoCommand {
+export function createSaveTodoCommand(
+  data: SaveTodoCommandData,
+): SaveTodoCommand {
   return { type: "save-todo", data };
 }
 

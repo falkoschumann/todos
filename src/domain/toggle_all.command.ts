@@ -11,7 +11,9 @@ export type ToggleAllCommandData = Readonly<{
   checked: boolean;
 }>;
 
-export function createToggleAll(data: ToggleAllCommandData): ToggleAllCommand {
+export function createToggleAllCommand(
+  data: ToggleAllCommandData,
+): ToggleAllCommand {
   return { type: "toggle-all", data };
 }
 

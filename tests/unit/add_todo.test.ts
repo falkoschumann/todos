@@ -4,8 +4,8 @@ import { beforeEach, describe, expect, it } from "vitest";
 
 import { AddTodoCommandHandler } from "../../src/application/add_todo.command_handler";
 import type { TodoState } from "../../src/domain/todo.aggregate";
-import { createAddTodo } from "../../src/domain/add_todo.command";
-import { createTodoAdded } from "../../src/domain/todo_added.event";
+import { createAddTodoCommand } from "../../src/domain/add_todo.command";
+import { createTodoAddedEvent } from "../../src/domain/todo_added.event";
 import { TodoRepository } from "../../src/infrastructure/todo.repository";
 import { EventBus } from "../../src/shared/event_bus";
 import { createCommandStatus } from "../../src/shared/message";
@@ -21,11 +21,11 @@ describe("Add todo", () => {
   it("should add todo", async () => {
     const { handler, eventBus, todoRepository } = configure();
 
-    const command = createAddTodo({ title: "foo" });
+    const command = createAddTodoCommand({ title: "foo" });
     const status = await handler.handle(command);
 
     expect(status).toEqual(createCommandStatus());
-    expect(eventBus.getEvents()).toEqual([createTodoAdded(todo1)]);
+    expect(eventBus.getEvents()).toEqual([createTodoAddedEvent(todo1)]);
     const todos = await todoRepository.findAll();
     expect(todos).toEqual([todo1]);
   });
@@ -34,11 +34,11 @@ describe("Add todo", () => {
     const { handler, eventBus, todoRepository } = configure();
     await todoRepository.saveAll([todo1]);
 
-    const command = createAddTodo({ title: "bar" });
+    const command = createAddTodoCommand({ title: "bar" });
     const status = await handler.handle(command);
 
     expect(status).toEqual(createCommandStatus());
-    expect(eventBus.getEvents()).toEqual([createTodoAdded(todo2)]);
+    expect(eventBus.getEvents()).toEqual([createTodoAddedEvent(todo2)]);
     const todos = await todoRepository.findAll();
     expect(todos).toEqual([todo1, todo2]);
   });
@@ -46,7 +46,7 @@ describe("Add todo", () => {
   it("should reject add todo with empty title", async () => {
     const { handler, eventBus, todoRepository } = configure();
 
-    const command = createAddTodo({ title: "" });
+    const command = createAddTodoCommand({ title: "" });
     const status = await handler.handle(command);
 
     expect(status).toEqual(createCommandStatus("title-must-not-be-empty"));
@@ -58,7 +58,7 @@ describe("Add todo", () => {
   it("should reject add todo with whitespace title", async () => {
     const { handler, eventBus, todoRepository } = configure();
 
-    const command = createAddTodo({ title: "   " });
+    const command = createAddTodoCommand({ title: "   " });
     const status = await handler.handle(command);
 
     expect(status).toEqual(createCommandStatus("title-must-not-be-empty"));
@@ -71,7 +71,7 @@ describe("Add todo", () => {
     const { handler, eventBus, todoRepository } = configure();
     await todoRepository.saveAll([todo1]);
 
-    const command = createAddTodo({ title: "foo" });
+    const command = createAddTodoCommand({ title: "foo" });
     const status = await handler.handle(command);
 
     expect(status).toEqual(createCommandStatus("title-must-be-unique"));

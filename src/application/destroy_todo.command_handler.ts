@@ -4,7 +4,7 @@ import {
   destroyTodo,
   type DestroyTodoCommand,
 } from "../domain/destroy_todo.command";
-import { createTodoDestroyed } from "../domain/todo_destroyed.event";
+import { createTodoDestroyedEvent } from "../domain/todo_destroyed.event";
 import type { TodoRepository } from "../infrastructure/todo.repository";
 import type { EventBus } from "../shared/event_bus";
 import { createCommandStatus, type CommandStatus } from "../shared/message";
@@ -33,7 +33,7 @@ export class DestroyTodoCommandHandler {
     state = destroyTodo(state, command);
     if (state != null) {
       await this.#todoRepository.delete(state);
-      const event = createTodoDestroyed(state);
+      const event = createTodoDestroyedEvent(state);
       this.#eventBus.publish(event);
     }
     return createCommandStatus();

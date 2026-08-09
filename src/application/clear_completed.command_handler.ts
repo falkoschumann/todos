@@ -4,7 +4,7 @@ import {
   clearCompleted,
   type ClearCompletedCommand,
 } from "../domain/clear_completed.command";
-import { createCompletedCleared } from "../domain/completed_cleared.event";
+import { createCompletedClearedEvent } from "../domain/completed_cleared.event";
 import type { TodoRepository } from "../infrastructure/todo.repository";
 import type { EventBus } from "../shared/event_bus";
 import { createCommandStatus, type CommandStatus } from "../shared/message";
@@ -32,7 +32,7 @@ export class ClearCompletedCommandHandler {
     const state = await this.#todoRepository.findAll();
     const cleared = clearCompleted(state, command);
     await this.#todoRepository.deleteAll(cleared);
-    const event = createCompletedCleared(cleared);
+    const event = createCompletedClearedEvent(cleared);
     this.#eventBus.publish(event);
     return createCommandStatus();
   }

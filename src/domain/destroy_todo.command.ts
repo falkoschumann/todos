@@ -11,7 +11,7 @@ export type DestroyTodoCommandData = Readonly<{
   id: number;
 }>;
 
-export function createDestroyTodo(
+export function createDestroyTodoCommand(
   data: DestroyTodoCommandData,
 ): DestroyTodoCommand {
   return { type: "destroy-todo", data };

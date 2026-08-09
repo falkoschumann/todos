@@ -4,8 +4,8 @@ import { beforeEach, describe, expect, it } from "vitest";
 
 import { SaveTodoCommandHandler } from "../../src/application/save_todo.command_handler";
 import type { TodoState } from "../../src/domain/todo.aggregate";
-import { createSaveTodo } from "../../src/domain/save_todo.command";
-import { createTodoSaved } from "../../src/domain/todo_saved.event";
+import { createSaveTodoCommand } from "../../src/domain/save_todo.command";
+import { createTodoSavedEvent } from "../../src/domain/todo_saved.event";
 import { TodoRepository } from "../../src/infrastructure/todo.repository";
 import { EventBus } from "../../src/shared/event_bus";
 import { createCommandStatus } from "../../src/shared/message";
@@ -22,12 +22,12 @@ describe("Save todo", () => {
     const { handler, eventBus, todoRepository } = configure();
     await todoRepository.saveAll([todo1, todo2]);
 
-    const command = createSaveTodo({ id: 1, title: "lorem ipsum" });
+    const command = createSaveTodoCommand({ id: 1, title: "lorem ipsum" });
     const status = await handler.handle(command);
 
     expect(status).toEqual(createCommandStatus());
     expect(eventBus.getEvents()).toEqual([
-      createTodoSaved({ id: 1, title: "lorem ipsum", completed: false }),
+      createTodoSavedEvent({ id: 1, title: "lorem ipsum", completed: false }),
     ]);
     const todos = await todoRepository.findAll();
     expect(todos).toEqual([{ ...todo1, title: "lorem ipsum" }, todo2]);
@@ -37,7 +37,7 @@ describe("Save todo", () => {
     const { handler, eventBus, todoRepository } = configure();
     await todoRepository.saveAll([todo1]);
 
-    const command = createSaveTodo({ id: 1, title: "" });
+    const command = createSaveTodoCommand({ id: 1, title: "" });
     const status = await handler.handle(command);
 
     expect(status).toEqual(createCommandStatus("title-must-not-be-empty"));
@@ -50,7 +50,7 @@ describe("Save todo", () => {
     const { handler, eventBus, todoRepository } = configure();
     await todoRepository.saveAll([todo1]);
 
-    const command = createSaveTodo({ id: 1, title: "   " });
+    const command = createSaveTodoCommand({ id: 1, title: "   " });
     const status = await handler.handle(command);
 
     expect(status).toEqual(createCommandStatus("title-must-not-be-empty"));
@@ -63,7 +63,7 @@ describe("Save todo", () => {
     const { handler, eventBus, todoRepository } = configure();
     await todoRepository.saveAll([{ ...todo1 }]);
 
-    const command = createSaveTodo({ id: 2, title: "lorem ipsum" });
+    const command = createSaveTodoCommand({ id: 2, title: "lorem ipsum" });
     const status = await handler.handle(command);
 
     expect(status).toEqual(createCommandStatus("todo-must-exist"));

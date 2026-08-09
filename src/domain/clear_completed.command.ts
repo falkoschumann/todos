@@ -7,7 +7,7 @@ export type ClearCompletedCommand = Readonly<{
   data: object;
 }>;
 
-export function createClearCompleted(): ClearCompletedCommand {
+export function createClearCompletedCommand(): ClearCompletedCommand {
   return { type: "clear-completed", data: {} };
 }
 

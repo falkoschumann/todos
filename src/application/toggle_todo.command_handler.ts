@@ -4,7 +4,7 @@ import {
   toggleTodo,
   type ToggleTodoCommand,
 } from "../domain/toggle_todo.command";
-import { createTodoToggled } from "../domain/todo_toggled.event";
+import { createTodoToggledEvent } from "../domain/todo_toggled.event";
 import type { TodoRepository } from "../infrastructure/todo.repository";
 import type { EventBus } from "../shared/event_bus";
 import { createCommandStatus, type CommandStatus } from "../shared/message";
@@ -33,7 +33,7 @@ export class ToggleTodoCommandHandler {
       let state = await this.#todoRepository.findById(command.data.id);
       state = toggleTodo(state, command);
       await this.#todoRepository.save(state);
-      const event = createTodoToggled(state);
+      const event = createTodoToggledEvent(state);
       this.#eventBus.publish(event);
       return createCommandStatus();
     } catch (error) {

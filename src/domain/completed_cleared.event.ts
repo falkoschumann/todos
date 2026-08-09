@@ -7,7 +7,7 @@ export type CompletedClearedEvent = Readonly<{
   data: TodoState[];
 }>;
 
-export function createCompletedCleared(
+export function createCompletedClearedEvent(
   data: TodoState[],
 ): CompletedClearedEvent {
   return { type: "clear-completed", data };

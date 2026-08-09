@@ -9,7 +9,7 @@ export type TodoDestroyedEventData = Readonly<{
   id: number;
 }>;
 
-export function createTodoDestroyed(
+export function createTodoDestroyedEvent(
   data: TodoDestroyedEventData,
 ): TodoDestroyedEvent {
   return { type: "todo-destroyed", data };

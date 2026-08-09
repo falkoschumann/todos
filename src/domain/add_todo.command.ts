@@ -11,7 +11,7 @@ export type AddTodoCommandData = Readonly<{
   title: string;
 }>;
 
-export function createAddTodo(data: AddTodoCommandData): AddTodoCommand {
+export function createAddTodoCommand(data: AddTodoCommandData): AddTodoCommand {
   return { type: "add-todo", data };
 }
 

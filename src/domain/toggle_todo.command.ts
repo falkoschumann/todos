@@ -11,7 +11,7 @@ export type ToggleTodoCommandData = Readonly<{
   id: number;
 }>;
 
-export function createToggleTodo(
+export function createToggleTodoCommand(
   data: ToggleTodoCommandData,
 ): ToggleTodoCommand {
   return { type: "toggle-todo", data };

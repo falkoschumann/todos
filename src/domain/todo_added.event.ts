@@ -7,6 +7,6 @@ export type TodoAddedEvent = Readonly<{
   data: TodoState;
 }>;
 
-export function createTodoAdded(data: TodoState): TodoAddedEvent {
+export function createTodoAddedEvent(data: TodoState): TodoAddedEvent {
   return { type: "todo-added", data };
 }
