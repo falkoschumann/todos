@@ -6,12 +6,12 @@ import { useLocation } from "react-router";
 import { createAddTodoCommand } from "../domain/add_todo.command";
 import { createClearCompletedCommand } from "../domain/clear_completed.command";
 import { createDestroyTodoCommand } from "../domain/destroy_todo.command";
+import { createGetTodosQueryResult, createGetTodosQuery, type GetTodosQueryResult } from "../domain/get_todos.query";
 import { createToggleAllCommand } from "../domain/toggle_all.command";
 import { createToggleTodoCommand } from "../domain/toggle_todo.command";
-import { createGetTodosQueryResult, createGetTodosQuery, type GetTodosQueryResult } from "../domain/get_todos.query";
-import FormComponent from "./form.component";
-import { TodoItemComponent } from "./todo_item.component";
 import FilterComponent from "./filter.component";
+import FormComponent from "./form.component";
+import TodoListComponent from "./todo_list.component";
 
 function TodosPage() {
   const { pathname } = useLocation();
@@ -66,16 +66,7 @@ function TodosPage() {
         />
       </header>
       <main>
-        <ul className="list-group mb-3">
-          {result.todos.map((todo) => (
-            <TodoItemComponent
-              key={todo.id}
-              todo={todo}
-              onToggle={() => handleToggleTodo(todo.id)}
-              onDestroy={() => handleDestroyTodo(todo.id)}
-            />
-          ))}
-        </ul>
+        <TodoListComponent todos={result.todos} onToggleTodo={handleToggleTodo} onDestroyTodo={handleDestroyTodo} />
       </main>
       <footer className="sticky-bottom py-2 bg-body">
         <FilterComponent activeTodoCount={result.activeTodoCount} onClearCompleted={handleClearCompleted} />
