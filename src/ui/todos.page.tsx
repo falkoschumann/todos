@@ -1,7 +1,7 @@
 // Copyright (c) 2026 Falko Schumann. All rights reserved. MIT license.
 
 import { useState, useEffect } from "react";
-import { NavLink, useLocation } from "react-router";
+import { useLocation } from "react-router";
 
 import { createAddTodoCommand } from "../domain/add_todo.command";
 import { createClearCompletedCommand } from "../domain/clear_completed.command";
@@ -11,6 +11,7 @@ import { createToggleTodoCommand } from "../domain/toggle_todo.command";
 import { createGetTodosQueryResult, createGetTodosQuery, type GetTodosQueryResult } from "../domain/get_todos.query";
 import FormComponent from "./form.component";
 import { TodoItemComponent } from "./todo_item.component";
+import FilterComponent from "./filter.component";
 
 function TodosPage() {
   const { pathname } = useLocation();
@@ -77,31 +78,7 @@ function TodosPage() {
         </ul>
       </main>
       <footer className="sticky-bottom py-2 bg-body">
-        <div className="container">
-          <div className="row">
-            <div className="col text-start">
-              {result.activeTodoCount} item{result.activeTodoCount !== 1 ? "s" : ""} left
-            </div>
-            <div className="col text-center">
-              <div className="btn-group">
-                <NavLink to="/" className="btn btn-outline-primary">
-                  All
-                </NavLink>
-                <NavLink to="active" className="btn btn-outline-primary">
-                  Active
-                </NavLink>
-                <NavLink to="completed" className="btn btn-outline-primary">
-                  Completed
-                </NavLink>
-              </div>
-            </div>
-            <div className="col text-end">
-              <button type="button" className="btn btn-primary" onClick={handleClearCompleted}>
-                Clear completed
-              </button>
-            </div>
-          </div>
-        </div>
+        <FilterComponent activeTodoCount={result.activeTodoCount} onClearCompleted={handleClearCompleted} />
       </footer>
     </div>
   );
