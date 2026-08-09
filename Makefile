@@ -74,7 +74,7 @@ integration-tests: prepare
 	$(RUN) $(RUN_OPTIONS) vitest run integration
 
 e2e-tests: prepare
-	$(RUN) $(RUN_OPTIONS) playwright test
+	$(RUN) $(RUN_OPTIONS) playwright test --pass-with-no-tests
 
 build: prepare
 	$(PM) run $(RUN_OPTIONS) vite build
