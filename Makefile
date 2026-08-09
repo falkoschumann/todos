@@ -77,7 +77,9 @@ e2e-tests: prepare
 	$(RUN) $(RUN_OPTIONS) playwright test --pass-with-no-tests
 
 e2e-ui: prepare
-	npx playwright test --ui
+# WORKAROUND option s--bun is not able to run playwright test --ui
+#	$(RUN) $(RUN_OPTIONS) playwright test --ui
+	$(RUN) playwright test --ui
 
 build: prepare
 	$(PM) run $(RUN_OPTIONS) vite build
