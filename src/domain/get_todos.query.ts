@@ -1,6 +1,6 @@
 // Copyright (c) 2026 Falko Schumann. All rights reserved. MIT license.
 
-import type { TodoState } from "./todo.aggregate.ts";
+import type { TodoState } from "./todo.aggregate";
 
 export type GetTodosQuery = Readonly<{
   type: "get-todos";
@@ -8,10 +8,10 @@ export type GetTodosQuery = Readonly<{
 }>;
 
 export type GetTodosQueryData = Readonly<{
-  showing: FilterType;
+  showing: Filter;
 }>;
 
-export type FilterType = "all" | "active" | "completed";
+export type Filter = "all" | "active" | "completed";
 
 export function createGetTodosQuery(
   data: GetTodosQueryData = { showing: "all" },
