@@ -1,6 +1,6 @@
 // Copyright (c) 2026 Falko Schumann. All rights reserved. MIT license.
 
-import { type SubmitEvent, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { NavLink, useLocation } from "react-router";
 
 import { createAddTodoCommand } from "../domain/add_todo.command";
@@ -9,12 +9,12 @@ import { createDestroyTodoCommand } from "../domain/destroy_todo.command";
 import { createToggleAllCommand } from "../domain/toggle_all.command";
 import { createToggleTodoCommand } from "../domain/toggle_todo.command";
 import { createGetTodosQueryResult, createGetTodosQuery, type GetTodosQueryResult } from "../domain/get_todos.query";
+import FormComponent from "./form.component";
 import { TodoItemComponent } from "./todo_item.component";
 
 function TodosPage() {
   const { pathname } = useLocation();
   const [refreshToken, setRefreshToken] = useState(0);
-  const [title, setTitle] = useState("");
   const [result, setResult] = useState(createGetTodosQueryResult());
 
   useEffect(() => {
@@ -28,16 +28,13 @@ function TodosPage() {
 
   const refresh = () => setRefreshToken((t) => t + 1);
 
-  const handleToggleAll = async () => {
-    await window.todos.routeMessage(createToggleAllCommand({ checked: result.activeTodoCount > 0 }));
+  const handleToggleAll = async (checked: boolean) => {
+    await window.todos.routeMessage(createToggleAllCommand({ checked }));
     refresh();
   };
 
-  const handleSubmit = async (event: SubmitEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
+  const handleAddTodo = async (title: string) => {
     await window.todos.routeMessage(createAddTodoCommand({ title }));
-    setTitle("");
     refresh();
   };
 
@@ -60,28 +57,14 @@ function TodosPage() {
     <div className="container my-3">
       <header>
         <h1 className="text-center">todos</h1>
+        <FormComponent
+          activeTodoCount={result.activeTodoCount}
+          completedCount={result.completedCount}
+          onAddTodo={handleAddTodo}
+          onToggleAll={handleToggleAll}
+        />
       </header>
       <main>
-        <form onSubmit={handleSubmit}>
-          <div className="input-group mb-3">
-            {(result.activeTodoCount > 0 || result.completedCount > 0) && (
-              <button
-                type="button"
-                className={`btn ${result.activeTodoCount > 0 ? "btn-outline-primary" : "btn-primary"}`}
-                onClick={handleToggleAll}
-              >
-                <i className="bi bi-check-lg"></i>
-              </button>
-            )}
-            <input
-              className="form-control"
-              type="text"
-              placeholder="What needs to be done?"
-              value={title}
-              onChange={(event) => setTitle(event.currentTarget.value)}
-            />
-          </div>
-        </form>
         <ul className="list-group mb-3">
           {result.todos.map((todo) => (
             <TodoItemComponent
