@@ -35,6 +35,11 @@ export function TodoItemComponent({
     }
   };
 
+  const handleBlur = () => {
+    onSave(title);
+    setEditing(false);
+  };
+
   return (
     <li className="list-group-item d-flex">
       {editing ? (
@@ -44,7 +49,7 @@ export function TodoItemComponent({
           type="text"
           autoFocus
           value={title}
-          onBlur={() => setEditing(false)}
+          onBlur={handleBlur}
           onChange={(e) => setTitle(e.target.value)}
           onKeyUp={handleKeyDown}
         />
