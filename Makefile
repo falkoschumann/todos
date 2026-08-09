@@ -33,7 +33,7 @@ check-esdm:
 	esdm lint
 
 check-typing:
-	$(PM) run $(RUN_OPTIONS) tsc -b
+	$(RUN) $(RUN_OPTIONS) tsc -b
 
 check-eslint:
 	$(RUN) $(RUN_OPTIONS) eslint .
