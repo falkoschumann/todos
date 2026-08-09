@@ -1,50 +1,103 @@
 // Copyright (c) 2026 Falko Schumann. All rights reserved. MIT license.
 
 import "bootstrap";
+import { type SubmitEvent, useState, useEffect } from "react";
 
+import { TodoItemComponent } from "./todo_item.component";
+
+import { createAddTodoCommand } from "../domain/add_todo.command";
+import { createClearCompletedCommand } from "../domain/clear_completed.command";
+import { createDestroyTodoCommand } from "../domain/destroy_todo.command";
+import { createToggleAllCommand } from "../domain/toggle_all.command";
+import { createToggleTodoCommand } from "../domain/toggle_todo.command";
+import { createGetTodosQueryResult, createGetTodosQuery, type GetTodosQueryResult } from "../domain/get_todos.query";
 import "./style.css";
 
 function App() {
+  const [title, setTitle] = useState("");
+  const [query, setQuery] = useState(createGetTodosQuery());
+  const [result, setResult] = useState(createGetTodosQueryResult());
+
+  useEffect(() => {
+    const queryAsync = async () => {
+      const result = await window.todos.routeMessage<GetTodosQueryResult>(query);
+      setResult(result);
+    };
+
+    void queryAsync();
+  }, [query]);
+
+  const handleToggleAll = async () => {
+    await window.todos.routeMessage(createToggleAllCommand({ checked: result.activeTodoCount > 0 }));
+    setQuery(createGetTodosQuery(query.data));
+  };
+
+  const handleSubmit = async (event: SubmitEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    await window.todos.routeMessage(createAddTodoCommand({ title }));
+    setTitle("");
+    setQuery(createGetTodosQuery(query.data));
+  };
+
+  const handleToggleTodo = async (id: number) => {
+    await window.todos.routeMessage(createToggleTodoCommand({ id }));
+    setQuery(createGetTodosQuery(query.data));
+  };
+
+  const handleDestroyTodo = async (id: number) => {
+    await window.todos.routeMessage(createDestroyTodoCommand({ id }));
+    setQuery(createGetTodosQuery(query.data));
+  };
+
+  const handleClearCompleted = async () => {
+    await window.todos.routeMessage(createClearCompletedCommand());
+    setQuery(createGetTodosQuery(query.data));
+  };
+
   return (
     <div className="container my-3">
       <header>
         <h1 className="text-center">todos</h1>
       </header>
       <main>
-        <form>
+        <form onSubmit={handleSubmit}>
           <div className="input-group mb-3">
-            <button className="btn btn-outline-primary" type="button">
-              <i className="bi bi-check-lg"></i>
-            </button>
-            <input className="form-control" type="text" placeholder="What needs to be done?" />
+            {(result.activeTodoCount > 0 || result.completedCount > 0) && (
+              <button
+                type="button"
+                className={`btn ${result.activeTodoCount > 0 ? "btn-outline-primary" : "btn-primary"}`}
+                onClick={handleToggleAll}
+              >
+                <i className="bi bi-check-lg"></i>
+              </button>
+            )}
+            <input
+              className="form-control"
+              type="text"
+              placeholder="What needs to be done?"
+              value={title}
+              onChange={(event) => setTitle(event.currentTarget.value)}
+            />
           </div>
         </form>
         <ul className="list-group mb-3">
-          <li className="list-group-item">
-            <input className="form-check-input me-2" type="checkbox" defaultChecked id="todo-1" />
-            <label className="form-check-label" htmlFor="todo-1">
-              foo
-            </label>
-            <button type="button" className="btn-close float-end ms-2"></button>
-          </li>
-          <li className="list-group-item">
-            <input className="form-check-input me-2" type="checkbox" id="todo-2" />
-            <label className="form-check-label" htmlFor="todo-2">
-              bar
-            </label>
-            <button type="button" className="btn-close float-end ms-2"></button>
-          </li>
-          <li className="list-group-item d-flex align-items-center py-1">
-            <input className="form-check-input me-2" type="checkbox" id="todo-3" />
-            <input className="form-control form-control-sm" type="text" defaultValue="edit me" />
-            <button type="button" className="btn-close float-end ms-2"></button>
-          </li>
+          {result.todos.map((todo) => (
+            <TodoItemComponent
+              key={todo.id}
+              todo={todo}
+              onToggle={() => handleToggleTodo(todo.id)}
+              onDestroy={() => handleDestroyTodo(todo.id)}
+            />
+          ))}
         </ul>
       </main>
       <footer className="sticky-bottom py-2 bg-body">
         <nav className="navbar">
           <div className="container">
-            <div>1 item left</div>
+            <div>
+              {result.activeTodoCount} item{result.activeTodoCount !== 1 ? "s" : ""} left
+            </div>
             <div className="btn-group">
               <a href="#" className="btn btn-outline-primary active" aria-current="page">
                 All
@@ -56,7 +109,7 @@ function App() {
                 Completed
               </a>
             </div>
-            <button className="btn btn-primary" type="button">
+            <button type="button" className="btn btn-primary" onClick={handleClearCompleted}>
               Clear completed
             </button>
           </div>
