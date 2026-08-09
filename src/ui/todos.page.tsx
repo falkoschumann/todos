@@ -1,6 +1,6 @@
 // Copyright (c) 2026 Falko Schumann. All rights reserved. MIT license.
 
-import { type SubmitEvent, useMemo, useState, useEffect } from "react";
+import { type SubmitEvent, useState, useEffect } from "react";
 import { NavLink, useLocation } from "react-router";
 
 import { createAddTodoCommand } from "../domain/add_todo.command";
@@ -12,34 +12,25 @@ import { createGetTodosQueryResult, createGetTodosQuery, type GetTodosQueryResul
 import { TodoItemComponent } from "./todo_item.component";
 
 function TodosPage() {
-  const [refreshToken, setRefreshToken] = useState(0);
   const { pathname } = useLocation();
-  const query = useMemo(() => {
-    switch (pathname) {
-      case "/active":
-        return createGetTodosQuery({ showing: "active" });
-      case "/completed":
-        return createGetTodosQuery({ showing: "completed" });
-      default:
-        return createGetTodosQuery();
-    }
-  }, [pathname, refreshToken]);
-
+  const [refreshToken, setRefreshToken] = useState(0);
   const [title, setTitle] = useState("");
   const [result, setResult] = useState(createGetTodosQueryResult());
 
   useEffect(() => {
+    const query = createQuery(pathname);
     const queryAsync = async () => {
       const result = await window.todos.routeMessage<GetTodosQueryResult>(query);
       setResult(result);
     };
-
     void queryAsync();
-  }, [query]);
+  }, [pathname, refreshToken]);
+
+  const refresh = () => setRefreshToken((t) => t + 1);
 
   const handleToggleAll = async () => {
     await window.todos.routeMessage(createToggleAllCommand({ checked: result.activeTodoCount > 0 }));
-    setRefreshToken((prev) => prev + 1);
+    refresh();
   };
 
   const handleSubmit = async (event: SubmitEvent<HTMLFormElement>) => {
@@ -47,22 +38,22 @@ function TodosPage() {
 
     await window.todos.routeMessage(createAddTodoCommand({ title }));
     setTitle("");
-    setRefreshToken((prev) => prev + 1);
+    refresh();
   };
 
   const handleToggleTodo = async (id: number) => {
     await window.todos.routeMessage(createToggleTodoCommand({ id }));
-    setRefreshToken((prev) => prev + 1);
+    refresh();
   };
 
   const handleDestroyTodo = async (id: number) => {
     await window.todos.routeMessage(createDestroyTodoCommand({ id }));
-    setRefreshToken((prev) => prev + 1);
+    refresh();
   };
 
   const handleClearCompleted = async () => {
     await window.todos.routeMessage(createClearCompletedCommand());
-    setRefreshToken((prev) => prev + 1);
+    refresh();
   };
 
   return (
@@ -131,6 +122,17 @@ function TodosPage() {
       </footer>
     </div>
   );
+}
+
+function createQuery(pathname: string) {
+  switch (pathname) {
+    case "/active":
+      return createGetTodosQuery({ showing: "active" });
+    case "/completed":
+      return createGetTodosQuery({ showing: "completed" });
+    default:
+      return createGetTodosQuery();
+  }
 }
 
 export default TodosPage;
