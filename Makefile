@@ -76,6 +76,9 @@ integration-tests: prepare
 e2e-tests: prepare
 	$(RUN) $(RUN_OPTIONS) playwright test --pass-with-no-tests
 
+e2e-ui: prepare
+	npx playwright test --ui
+
 build: prepare
 	$(PM) run $(RUN_OPTIONS) vite build
 
@@ -104,5 +107,5 @@ version:
 	domain domain-with-details \
 	check check-esdm check-typing check-eslint check-stylelint check-prettier check-sheriff \
 	fix fix-eslint fix-stylelint fix-prettier \
-	dev test watch unit-tests integration-tests e2e-tests \
+	dev test watch unit-tests integration-tests e2e-tests e2e-ui \
 	build prepare version
