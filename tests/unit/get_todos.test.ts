@@ -70,7 +70,7 @@ describe("Get todos", () => {
   it("should return no todos when none exist", async () => {
     const { handler } = configure();
 
-    const query = createGetTodosQuery({ showing: "all" });
+    const query = createGetTodosQuery();
     const result = await handler.handle(query);
 
     expect(result).toEqual(createGetTodosQueryResult());

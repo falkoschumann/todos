@@ -8,10 +8,14 @@ export type GetTodosQuery = Readonly<{
 }>;
 
 export type GetTodosQueryData = Readonly<{
-  showing: "all" | "active" | "completed";
+  showing: FilterType;
 }>;
 
-export function createGetTodosQuery(data: GetTodosQueryData): GetTodosQuery {
+export type FilterType = "all" | "active" | "completed";
+
+export function createGetTodosQuery(
+  data: GetTodosQueryData = { showing: "all" },
+): GetTodosQuery {
   return {
     type: "get-todos",
     data,
